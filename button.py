@@ -9,7 +9,7 @@ class Button():
         """设置按钮的尺寸和其他属性"""
         self.width = 200
         self.height = 50
-        self.button_color = (0,255,0)
+        self.button_color = (0,0,0)
         self.text_color = (255,255,255)
         self.font = pygame.font.SysFont(None,48)
 

@@ -32,7 +32,7 @@ def check_keyup_events(event,ship):
         ship.moving_down = False
     elif event.key == pygame.K_q:
         sys.exit()
-def check_events(ai_settings,screen,ship,bullets):
+def check_events(ai_settings,screen,ship,bullets,stats,play_button,aliens):
     # 问题：这到底循环一次有几个event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -43,13 +43,16 @@ def check_events(ai_settings,screen,ship,bullets):
 
         elif event.type == pygame.KEYUP:
             check_keyup_events(event,ship)
-
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # 返回点击时的鼠标x,y坐标
+            mouse_x,mouse_y = pygame.mouse.get_pos()
+            check_play_button(stats,play_button,mouse_x,mouse_y,aliens,bullets,ship,ai_settings,screen)
 
             # if event.key == pygame.K_RIGHT:
             #     ship.moving_right = False
             # elif event.key == pygame.K_LEFT:
             #     ship.moving_left = False
-def update_screen(ai_settings,screen,ship,bullets,aliens):
+def update_screen(ai_settings,screen,ship,bullets,aliens,stats,play_button):
     # 每次循环时都重绘屏幕
     screen.fill(ai_settings.bg_color)  # 设置背景色
     for bullet in bullets.sprites():
@@ -58,6 +61,8 @@ def update_screen(ai_settings,screen,ship,bullets,aliens):
     # 对编组调用draw，会根据编组内部元素的属性rect绘制每个元素
     aliens.draw(screen)
     # 让最近绘制的屏幕可见
+    if not stats.game_active:
+        play_button.draw_button()
     pygame.display.flip()
 
 
@@ -151,7 +156,7 @@ def update_aliens(ai_settings, aliens,ship,stats,screen,bullets):
     check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets)
 
 def ship_hit(ai_settings, aliens,ship,stats,screen,bullets):
-    if stats.ships_left > 0:
+    if stats.ships_left > 1:
         # 被撞倒后飞船生命值-1
         stats.ships_left -=1
         # 清空外星人和子弹的编组
@@ -165,6 +170,8 @@ def ship_hit(ai_settings, aliens,ship,stats,screen,bullets):
         sleep(0.5)
     else:
         stats.game_active = False
+        # 游戏进入非活动状态，光标可见
+        pygame.mouse.set_visible(True)
 
 
 def check_aliens_bottom(ai_settings,stats,screen,ship,aliens,bullets):
@@ -174,3 +181,19 @@ def check_aliens_bottom(ai_settings,stats,screen,ship,aliens,bullets):
         if alien.rect.bottom >=screen_rect.bottom:
             ship_hit(ai_settings, aliens,ship,stats,screen,bullets)
             break
+
+def check_play_button(stats,play_button,mouse_x,mouse_y,aliens,bullets,ship,ai_settings,screen):
+    # 单击时开始游戏
+    # collidepoint检查鼠标的x,y坐标点是否在按钮的rect内
+    # 当且仅当鼠标点击按钮且游戏在非活动状态时，才能重置游戏
+    if play_button.rect.collidepoint(mouse_x,mouse_y) and not stats.game_active:
+        # 重置游戏
+
+        stats.game_active = True
+        # 游戏进入活动状态后，光标不可见
+        pygame.mouse.set_visible(False)
+        stats.reset_stats()
+        aliens.empty()
+        bullets.empty()
+        create_fleet(ai_settings,screen,aliens,ship)
+        ship.center_ship()

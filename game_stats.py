@@ -7,6 +7,5 @@ class GameStats():
         self.game_active = False
     def reset_stats(self):
         """初始化 统计信息"""
-
         self.ships_left = self.ai_settings.ship_limit # 这里left是剩余的意思
 
