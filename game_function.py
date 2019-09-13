@@ -7,7 +7,7 @@ import pygame
 from bullet import Bullet
 from alien import Alien
 from time import sleep
-def check_keydown_events(event,ai_settings,screen,ship,bullets):
+def check_keydown_events(event,ai_settings,screen,ship,bullets,stats, aliens):
     """响应按下键盘"""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
@@ -20,6 +20,8 @@ def check_keydown_events(event,ai_settings,screen,ship,bullets):
     elif event.key == pygame.K_SPACE:
         # new_bullet是Bullet的一个实例
         fire_bullet(bullets, ai_settings, screen, ship)
+    elif event.key == pygame.K_p:
+        start_game(stats, aliens, bullets, ship, ai_settings, screen)
 def check_keyup_events(event,ship):
     """响应松开键盘"""
     if event.key == pygame.K_RIGHT:
@@ -39,7 +41,7 @@ def check_events(ai_settings,screen,ship,bullets,stats,play_button,aliens):
             sys.exit()
         elif event.type == pygame.KEYDOWN:
             # print(event.key) event.key是273 274 等等数字（int类型）
-            check_keydown_events(event,ai_settings,screen,ship,bullets)
+            check_keydown_events(event,ai_settings,screen,ship,bullets,stats, aliens)
 
         elif event.type == pygame.KEYUP:
             check_keyup_events(event,ship)
@@ -72,6 +74,7 @@ def check_bullet_alien_collisions(ai_settings,aliens,bullets,screen,ship):
     if len(aliens) == 0:
         # empty方法 是编组的自带方法，清空编组。但我觉得没必要
         bullets.empty()
+        ai_settings.increase_speed()
         create_fleet(ai_settings,screen,aliens,ship)
 
 
@@ -180,6 +183,7 @@ def check_aliens_bottom(ai_settings,stats,screen,ship,aliens,bullets):
     for alien in aliens:
         if alien.rect.bottom >=screen_rect.bottom:
             ship_hit(ai_settings, aliens,ship,stats,screen,bullets)
+            # break 就是碰底直接死
             break
 
 def check_play_button(stats,play_button,mouse_x,mouse_y,aliens,bullets,ship,ai_settings,screen):
@@ -188,12 +192,23 @@ def check_play_button(stats,play_button,mouse_x,mouse_y,aliens,bullets,ship,ai_s
     # 当且仅当鼠标点击按钮且游戏在非活动状态时，才能重置游戏
     if play_button.rect.collidepoint(mouse_x,mouse_y) and not stats.game_active:
         # 重置游戏
+        start_game(stats, aliens, bullets, ship, ai_settings, screen)
+        # stats.game_active = True
+        # # 游戏进入活动状态后，光标不可见
+        # pygame.mouse.set_visible(False)
+        # stats.reset_stats()
+        # aliens.empty()
+        # bullets.empty()
+        # create_fleet(ai_settings,screen,aliens,ship)
+        # ship.center_ship()
 
-        stats.game_active = True
-        # 游戏进入活动状态后，光标不可见
-        pygame.mouse.set_visible(False)
-        stats.reset_stats()
-        aliens.empty()
-        bullets.empty()
-        create_fleet(ai_settings,screen,aliens,ship)
-        ship.center_ship()
+def start_game(stats,aliens,bullets,ship,ai_settings,screen):
+    stats.game_active = True
+    ai_settings.initialize_dynamic_settings()
+    # 游戏进入活动状态后，光标不可见
+    pygame.mouse.set_visible(False)
+    stats.reset_stats()
+    aliens.empty()
+    bullets.empty()
+    create_fleet(ai_settings, screen, aliens, ship)
+    ship.center_ship()

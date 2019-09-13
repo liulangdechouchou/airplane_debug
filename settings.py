@@ -22,3 +22,16 @@ class Settings():
         # 1表示右移
         self.fleet_direction = 1
         self.ship_limit = 3
+        # 加快游戏节奏
+        self.speedup_scale = 1.1
+        self.initialize_dynamic_settings() # dynamic 动态的意思，这个函数是动态参数设置
+    def initialize_dynamic_settings(self):
+        self.bullet_speed_factor = 1
+        self.alien_speed_factor = 1
+        self.ship_speed_factor = 1.5
+        self.fleet_direction = 1
+    def increase_speed(self):
+        # 提速
+        self.ship_speed_factor *= self.speedup_scale
+        self.bullet_speed_factor *= self.speedup_scale
+        self.alien_speed_factor *= self.speedup_scale
