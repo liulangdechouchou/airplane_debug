@@ -24,14 +24,19 @@ class Settings():
         self.ship_limit = 3
         # 加快游戏节奏
         self.speedup_scale = 1.1
+        # 外星人点数提高速度
+        self.score_scale = 1.5
         self.initialize_dynamic_settings() # dynamic 动态的意思，这个函数是动态参数设置
+        self.filename = "highest_score.json"
     def initialize_dynamic_settings(self):
         self.bullet_speed_factor = 1
         self.alien_speed_factor = 1
         self.ship_speed_factor = 1.5
         self.fleet_direction = 1
+        self.alien_points = 50
     def increase_speed(self):
         # 提速
         self.ship_speed_factor *= self.speedup_scale
         self.bullet_speed_factor *= self.speedup_scale
         self.alien_speed_factor *= self.speedup_scale
+        self.alien_points =int(self.alien_points * self.score_scale)
