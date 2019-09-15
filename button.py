@@ -11,7 +11,7 @@ class Button():
         self.height = 50
         self.button_color = (0,0,0)
         self.text_color = (255,255,255)
-        self.font = pygame.font.SysFont(None,48)
+        self.font = pygame.font.SysFont("arial",48)
 
         # 创建按钮的rect对象，居中
         #  常用的Rect参数有这个形式：pygame.Rect(left, top, width, height)
